@@ -25,7 +25,7 @@ async def menu_test_2_egor_leon(message: types.Message):
 
 
 @user_private_rt.message()
-async def echo(message: types.Message):
+async def echo_egor_leon(message: types.Message):
     text = message.text.casefold()
 
     if text in ['привет', 'здарова', 'hi', 'hello']:
