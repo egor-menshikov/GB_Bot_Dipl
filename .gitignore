@@ -398,3 +398,4 @@ FodyWeavers.xsd
 /shelf/
 /workspace.xml
 .idea/
+.env
