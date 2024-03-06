@@ -2,38 +2,24 @@ import asyncio
 import os
 
 from aiogram import Bot, Dispatcher, types
-from aiogram.filters import CommandStart
+
 from dotenv import find_dotenv, load_dotenv
+from handlers.user_private import user_private_rt
 
 load_dotenv(find_dotenv())
+
+ALLOWED_UPDATES = ['message', 'edited_message']
 
 # инициализация бота и диспетчера сообщений/команд
 bot = Bot(token=os.getenv('TOKEN'))
 dp = Dispatcher()
-
-
-# handler команды /start
-@dp.message(CommandStart())
-async def start_cmd(message: types.Message):
-    await message.answer('Это была команда старт')
-
-
-@dp.message()
-async def echo(message: types.Message):
-    text = message.text.casefold()
-
-    if text in ['привет', 'здарова', 'hi', 'hello']:
-        await message.answer('И тебе привет!')
-    elif text in ['пока', 'до свидания', 'bye', 'cya']:
-        await message.answer('И тебе пока!')
-    else:
-        await message.answer(message.text)
+dp.include_routers(user_private_rt)
 
 
 # бот начинает слушать сервер тг
 async def main():
     await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot)
+    await dp.start_polling(bot, allowed_updates=ALLOWED_UPDATES)
 
 
 if __name__ == '__main__':
