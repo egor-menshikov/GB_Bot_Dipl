@@ -5,22 +5,22 @@ user_private_rt = Router()
 
 
 @user_private_rt.message(CommandStart())
-async def start_cmd(message: types.Message):
+async def start_cmd_egor_leon(message: types.Message):
     await message.answer('Это была команда старт.')
 
 
 @user_private_rt.message(Command('menu'))
-async def menu(message: types.Message):
+async def menu_egor_leon(message: types.Message):
     await message.answer('Это будущее меню.')
 
 
 @user_private_rt.message(Command('test_command_1'))
-async def menu_test_1(message: types.Message):
+async def menu_test_1_egor_leon(message: types.Message):
     await message.answer('Это тестовая команда 1.')
 
 
 @user_private_rt.message(Command('test_command_2'))
-async def menu_test_2(message: types.Message):
+async def menu_test_2_egor_leon(message: types.Message):
     await message.answer('Это тестовая команда 2.')
 
 
