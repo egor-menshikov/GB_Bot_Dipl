@@ -1,8 +1,10 @@
 from aiogram import types, Router, F
 from aiogram.filters import CommandStart, Command, or_f
 
+from filters.chat_types import ChatTypeFilter
+
 user_private_rt = Router()
-user_private_rt.message.filter()
+user_private_rt.message.filter(ChatTypeFilter(['private']))
 
 
 @user_private_rt.message(CommandStart())
