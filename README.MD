@@ -49,6 +49,7 @@
   метод ```as_markup()```. Такую клавиатуру можно достраивать от любой другой: ```new_kb.attach(old_kb)```, и дальше
   добавлять новые кнопки.
 * Можно запрашивать локацию, телефон, создавать голосования, при указании опций ```request...``` после текста кнопки.
+* [Форматирование текста.](https://docs.aiogram.dev/en/latest/utils/formatting.html) ```TODO```
 
 ##### [python-dotenv](https://github.com/theskumar/python-dotenv)
 

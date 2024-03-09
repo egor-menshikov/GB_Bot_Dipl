@@ -1,5 +1,6 @@
 from aiogram import types, Router, F
 from aiogram.filters import CommandStart, Command, or_f
+from aiogram.utils.formatting import as_list, as_marked_section, Bold
 
 from filters.chat_types import ChatTypeFilter
 from keyboards import reply
@@ -36,13 +37,35 @@ async def about_cmd(message: types.Message):
 @user_private_rt.message(F.text.lower() == "варианты оплаты")
 @user_private_rt.message(Command("payment"))
 async def payment_cmd(message: types.Message):
-    await message.answer("Варианты оплаты:")
+    text = as_marked_section(
+        Bold("Варианты оплаты:"),
+        'Картой в боте',
+        'При получении',
+        'В заведении',
+        marker='✅ '
+    )
+    await message.answer(text.as_html())
 
 
 @user_private_rt.message((F.text.lower().contains('доставк')) | (F.text.lower() == 'варианты доставки'))
 @user_private_rt.message(Command("shipping"))
 async def menu_cmd(message: types.Message):
-    await message.answer("Варианты доставки:")
+    text = as_list(
+        as_marked_section(
+            Bold("Варианты доставки:"),
+            'Картой в боте',
+            'При получении',
+            'В заведении',
+            marker='✅ '
+        ),
+        as_marked_section(
+            Bold('Нельзя:'),
+            'Почта',
+            'Голуби',
+            marker='❌ '
+        ),
+        sep='\n----------------------\n')
+    await message.answer(text.as_html())
 
 
 @user_private_rt.message(F.contact)
