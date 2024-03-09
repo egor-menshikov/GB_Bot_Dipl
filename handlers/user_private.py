@@ -2,6 +2,7 @@ from aiogram import types, Router, F
 from aiogram.filters import CommandStart, Command, or_f
 
 from filters.chat_types import ChatTypeFilter
+from keyboards import reply
 
 user_private_rt = Router()
 user_private_rt.message.filter(ChatTypeFilter(['private']))
@@ -9,29 +10,54 @@ user_private_rt.message.filter(ChatTypeFilter(['private']))
 
 @user_private_rt.message(CommandStart())
 async def start_cmd(message: types.Message):
-    await message.answer('Это была команда старт.')
+    await message.answer('Это была команда старт.',
+                         reply_markup=reply.start_kb3.as_markup(
+                             resize_keyboard=True,
+                             input_field_placeholder='Что вас интересует?'
+                         ))
 
 
 @user_private_rt.message(or_f(Command('menu'), F.text.lower() == 'меню'))
 async def menu(message: types.Message):
-    await message.answer('Это будущее меню.')
+    await message.answer('Это будущее меню.',
+                         reply_markup=reply.del_kb)
 
 
-@user_private_rt.message(Command('test_command_1'))
-async def menu_test_1(message: types.Message):
-    await message.answer('Это тестовая команда 1.')
+@user_private_rt.message(F.text.lower() == "о магазине")
+@user_private_rt.message(Command("about"))
+async def about_cmd(message: types.Message):
+    await message.answer("О нас:",
+                         reply_markup=reply.test_kb.as_markup(
+                             resize_keyboard=True,
+                             input_field_placeholder='Выберите опцию:'
+                         ))
 
 
-@user_private_rt.message(Command('test_command_2'))
-async def menu_test_2(message: types.Message):
-    await message.answer('Это тестовая команда 2.')
+@user_private_rt.message(F.text.lower() == "варианты оплаты")
+@user_private_rt.message(Command("payment"))
+async def payment_cmd(message: types.Message):
+    await message.answer("Варианты оплаты:")
 
+
+@user_private_rt.message((F.text.lower().contains('доставк')) | (F.text.lower() == 'варианты доставки'))
+@user_private_rt.message(Command("shipping"))
+async def menu_cmd(message: types.Message):
+    await message.answer("Варианты доставки:")
+
+
+@user_private_rt.message(F.contact)
+async def get_contact(message: types.Message):
+    await message.answer(f"номер получен")
+    await message.answer(str(message.contact))
+
+
+@user_private_rt.message(F.location)
+async def get_location(message: types.Message):
+    await message.answer(f"локация получена")
+    await message.answer(str(message.location))
 
 # '|' - или
 # '&' ',' - и
-@user_private_rt.message(F.text, F.text.lower() == 'варианты')
-async def magic_filter_test(message: types.Message):
-    await message.answer('Это магический фильтр.')
 
 # @user_private_rt.message()
 # async def echo(message: types.Message):
