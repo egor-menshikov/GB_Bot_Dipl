@@ -39,7 +39,7 @@ def clean_text(text: str):
 @user_group_rt.edited_message()
 @user_group_rt.message()
 async def profanity_filter(message: types.Message):
-    if PROFANITY.intersection(clean_text(message.text.lower()).split()):
+    if PROFANITY.intersection(clean_text(message.text.casefold()).split()):
         await message.answer(f'{message.from_user.username} ай как нехорошо.')
         await message.delete()
         # await message.chat.ban(message.from_user.id)

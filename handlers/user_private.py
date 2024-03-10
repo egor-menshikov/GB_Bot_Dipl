@@ -22,18 +22,18 @@ async def start_cmd(message: types.Message):
                          ))
 
 
-@user_private_rt.message(or_f(Command('menu'), F.text.lower() == 'меню'))
+@user_private_rt.message(or_f(Command('menu'), F.text.casefold() == 'меню'))
 async def menu(message: types.Message):
     await message.answer('Это будущее меню.')
 
 
-@user_private_rt.message(F.text.lower() == "о магазине")
+@user_private_rt.message(F.text.casefold() == "о магазине")
 @user_private_rt.message(Command("about"))
 async def about_cmd(message: types.Message):
     await message.answer("О нас:")
 
 
-@user_private_rt.message(F.text.lower() == "варианты оплаты")
+@user_private_rt.message(F.text.casefold() == "варианты оплаты")
 @user_private_rt.message(Command("payment"))
 async def payment_cmd(message: types.Message):
     text = as_marked_section(
@@ -46,7 +46,7 @@ async def payment_cmd(message: types.Message):
     await message.answer(text.as_html())
 
 
-@user_private_rt.message((F.text.lower().contains('доставк')) | (F.text.lower() == 'варианты доставки'))
+@user_private_rt.message((F.text.casefold().contains('доставк')) | (F.text.casefold() == 'варианты доставки'))
 @user_private_rt.message(Command("shipping"))
 async def menu_cmd(message: types.Message):
     text = as_list(

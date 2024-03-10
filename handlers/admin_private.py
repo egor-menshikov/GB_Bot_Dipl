@@ -45,6 +45,12 @@ class AddProduct(StatesGroup):
     description = State()
     price = State()
     image = State()
+    texts = {
+        'AddProduct:name': 'Введите название заново:',
+        'AddProduct:description': 'Введите описание заново:',
+        'AddProduct:price': 'Введите стоимость заново:',
+        'AddProduct:image': 'Этот стейт последний, поэтому...',
+    }
 
 
 @admin_rt.message(StateFilter(None), F.text == "Добавить товар")
@@ -55,18 +61,34 @@ async def add_product(message: types.Message, state: FSMContext):
     await state.set_state(AddProduct.name)
 
 
-@admin_rt.message(Command("отмена"))
-@admin_rt.message(F.text.casefold() == "отмена")
+@admin_rt.message(StateFilter('*'), Command("отмена"))
+@admin_rt.message(StateFilter('*'), F.text.casefold() == "отмена")
 async def cancel_handler(message: types.Message, state: FSMContext) -> None:
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    await state.clear()
     await message.answer("Действия отменены", reply_markup=ADMIN_KB)
 
 
-@admin_rt.message(Command("назад"))
-@admin_rt.message(F.text.casefold() == "назад")
+@admin_rt.message(StateFilter('*'), Command("назад"))
+@admin_rt.message(StateFilter('*'), F.text.casefold() == "назад")
 async def cancel_handler(message: types.Message, state: FSMContext) -> None:
-    await message.answer(f"ок, вы вернулись к прошлому шагу")
+    current_state = await state.get_state()
+    if current_state == AddProduct.name:
+        await message.answer('Предидущего шага нет, или введите название товара или напишите "отмена"')
+        return
+
+    previous = None
+    for step in AddProduct.__all_states__:
+        if step.state == current_state:
+            await state.set_state(previous)
+            await message.answer(f"Ок, вы вернулись к прошлому шагу \n {AddProduct.texts[previous.state]}")
+            return
+        previous = step
 
 
+# Название
 @admin_rt.message(StateFilter(AddProduct.name), F.text)
 async def add_name(message: types.Message, state: FSMContext):
     await state.update_data(name=message.text)
@@ -74,6 +96,12 @@ async def add_name(message: types.Message, state: FSMContext):
     await state.set_state(AddProduct.description)
 
 
+@admin_rt.message(StateFilter(AddProduct.name))
+async def add_name(message: types.Message, state: FSMContext):
+    await message.answer("Введите название товара корректно")
+
+
+# Описание
 @admin_rt.message(StateFilter(AddProduct.description), F.text)
 async def add_description(message: types.Message, state: FSMContext):
     await state.update_data(description=message.text)
@@ -81,6 +109,12 @@ async def add_description(message: types.Message, state: FSMContext):
     await state.set_state(AddProduct.price)
 
 
+@admin_rt.message(StateFilter(AddProduct.description))
+async def add_description(message: types.Message, state: FSMContext):
+    await message.answer("Введите описание товара корректно")
+
+
+# Стоимость
 @admin_rt.message(StateFilter(AddProduct.price), F.text)
 async def add_price(message: types.Message, state: FSMContext):
     await state.update_data(price=message.text)
@@ -88,6 +122,12 @@ async def add_price(message: types.Message, state: FSMContext):
     await state.set_state(AddProduct.image)
 
 
+@admin_rt.message(StateFilter(AddProduct.price))
+async def add_price(message: types.Message, state: FSMContext):
+    await message.answer("Введите стоимость товара корректно")
+
+
+# Изображение
 @admin_rt.message(StateFilter(AddProduct.image), F.photo)
 async def add_image(message: types.Message, state: FSMContext):
     await state.update_data(image=message.photo[-1].file_id)
@@ -95,3 +135,8 @@ async def add_image(message: types.Message, state: FSMContext):
     data = await state.get_data()
     await message.answer(str(data))
     await state.clear()
+
+
+@admin_rt.message(StateFilter(AddProduct.image), F.photo)
+async def add_image(message: types.Message, state: FSMContext):
+    await message.answer("Загрузите изображение товара корректно", reply_markup=ADMIN_KB)
