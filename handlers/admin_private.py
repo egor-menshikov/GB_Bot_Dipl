@@ -24,17 +24,17 @@ async def add_product(message: types.Message):
     await message.answer("Что хотите сделать?", reply_markup=ADMIN_KB)
 
 
-@admin_rt.message(F.text == "Я так, просто посмотреть зашел")
+@admin_rt.message(F.text.casefold() == "я так, просто посмотреть зашел")
 async def starring_at_product(message: types.Message):
     await message.answer("ОК, вот список товаров")
 
 
-@admin_rt.message(F.text == "Изменить товар")
+@admin_rt.message(F.text.casefold() == "изменить товар")
 async def change_product(message: types.Message):
     await message.answer("ОК, вот список товаров")
 
 
-@admin_rt.message(F.text == "Удалить товар")
+@admin_rt.message(F.text.casefold() == "удалить товар")
 async def delete_product(message: types.Message):
     await message.answer("Выберите товар(ы) для удаления")
 
@@ -53,7 +53,7 @@ class AddProduct(StatesGroup):
     }
 
 
-@admin_rt.message(StateFilter(None), F.text == "Добавить товар")
+@admin_rt.message(StateFilter(None), F.text.casefold() == "добавить товар")
 async def add_product(message: types.Message, state: FSMContext):
     await message.answer(
         "Введите название товара", reply_markup=types.ReplyKeyboardRemove()
