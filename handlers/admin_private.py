@@ -4,8 +4,11 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.orm_query import orm_add_product, orm_get_products, orm_delete_product, orm_get_product, \
-    orm_update_product
+from database.orm_query import (orm_add_product,
+                                orm_get_products,
+                                orm_delete_product,
+                                orm_get_product,
+                                orm_update_product)
 from filters.chat_types import ChatTypeFilter, IsAdmin
 from keyboards.inline import get_callback_btns
 from keyboards.reply import get_keyboard
@@ -66,7 +69,7 @@ async def delete_product(callback: types.CallbackQuery, session: AsyncSession):
 
 @admin_rt.callback_query(StateFilter(None), F.data.startswith("change_"))
 async def change_product_callback(
-    callback: types.CallbackQuery, state: FSMContext, session: AsyncSession
+        callback: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     product_id = callback.data.split("_")[-1]
     product_for_change = await orm_get_product(session, int(product_id))
@@ -77,6 +80,7 @@ async def change_product_callback(
         "Введите название товара", reply_markup=types.ReplyKeyboardRemove()
     )
     await state.set_state(AddProduct.name)
+
 
 # Код ниже для машины состояний (FSM)
 
