@@ -2,35 +2,25 @@ from aiogram import F, types, Router
 from aiogram.filters import CommandStart
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from database.orm_query import (
-    orm_add_to_cart,
-    orm_add_user,
-)
+
 
 from filters.chat_types import ChatTypeFilter
-from keyboards.inline import get_callback_btns
+from handlers.menu_processing import get_menu_content
 
 user_private_rt = Router()
 user_private_rt.message.filter(ChatTypeFilter(["private"]))
 
 
 @user_private_rt.message(CommandStart())
-async def start_cmd(message: types.Message):
-    await message.answer("Привет, я виртуальный помощник",
-                         reply_markup=get_callback_btns(btns={
-                             'Нажми меня': 'some_1'
-                         }))
+async def start_cmd(message: types.Message, session: AsyncSession):
+    media, reply_markup = await get_menu_content(session, level=0, menu_name='main')
+
+    await message.answer_photo(media.media, caption=media.caption, reply_markup=reply_markup)
 
 
-@user_private_rt.callback_query(F.data.startswith('some_'))
-async def counter(callback: types.CallbackQuery):
-    number = int(callback.data.split('_')[-1])
 
-    await callback.message.edit_text(
-        text=f"Нажатий - {number}",
-        reply_markup=get_callback_btns(btns={
-            'Нажми еще раз': f'some_{number + 1}'
-        }))
+
+
 
 
 
